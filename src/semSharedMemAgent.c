@@ -132,16 +132,29 @@ static void prepareIngredients ()
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
+      sh->fSt.st.agentStat=PREPARING;
+      saveState(nFic,&sh->fSt);
 
-    /* TODO: insert your code here */
+
+      int firstIng=0;
+      int secondIng=0;
+
+      firstIng=rand()%3;
+      bool first=true;
+      while(first || firstIng==secondIng){
+          secondIng=rand()%3;
+          first=false;
+      }
+      
+      semUp(semgid,sh->ingredient[firstIng]);
+      semUp(semgid,sh->ingredient[secondIng]);
 
     if (semUp (semgid, sh->mutex) == -1) {                                                        /* leave critical region */
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
 
-    /* TODO: insert your code here */
-
+    /* Usar código no waitForCigarette */
 }
 
 /**
@@ -157,7 +170,7 @@ static void waitForCigarette ()
         exit (EXIT_FAILURE);
     }
 
-    /* TODO: insert your code here */
+    semDown(semgid, sh->waitCigarette);
 
     if (semUp (semgid, sh->mutex) == -1) {                                                        /* leave critical region */
         perror ("error on the up operation for semaphore access (AG)");
@@ -179,7 +192,9 @@ static void closeFactory ()
         exit (EXIT_FAILURE);
     }
 
-    /* TODO: insert your code here */
+    sh->fSt.st.agentStat=CLOSING_A;
+    //sh->fSt.closing=1;
+    saveState(nFic, &sh->fSt);
 
     if (semUp (semgid, sh->mutex) == -1) {                                                        /* leave critical region */
         perror ("error on the up operation for semaphore access (AG)");
