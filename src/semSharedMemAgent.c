@@ -153,8 +153,13 @@ static void prepareIngredients ()
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
+    //atualizei o estado do agente
+    sh->fSt.st.agentStat=WAITING_CIG;
+    saveState(nFic,&sh->fSt);
 
-    /* Usar código no waitForCigarette */
+    /* Usar código no waitForCigarette
+        hm afinal não , falta atualizar o estado vou aprovveitar e fzr logo aqui
+     */
 }
 
 /**
@@ -169,7 +174,7 @@ static void waitForCigarette ()
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
-
+    // isto continua certo
     semDown(semgid, sh->waitCigarette);
 
     if (semUp (semgid, sh->mutex) == -1) {                                                        /* leave critical region */
