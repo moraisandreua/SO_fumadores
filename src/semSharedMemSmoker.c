@@ -158,17 +158,18 @@ static bool waitForIngredients (int id)
     //by me
     sh->fSt.st.smokerStat[id]=WAITING_2ING;
     saveState(nFic,&sh->fSt);
-     if(semDown(semgid,sh->wait2Ings[id]==-1)){
-         perror("error on the up operation for semaphore access (SM)");
-        exit(EXIT_FAILURE);
-     }
-    
     /* TODO: insert your code here */
 
     if (semUp (semgid, sh->mutex) == -1) {                                                         /* exit critical region */
         perror ("error on the down operation for semaphore access (SM)");
         exit (EXIT_FAILURE);
     }
+
+    if(semDown(semgid,sh->wait2Ings[id]==-1)){
+         perror("error on the down operation for semaphore access (SM)");
+        exit(EXIT_FAILURE);
+     }
+    
 
     /* TODO: insert your code here */
 
@@ -177,19 +178,20 @@ static bool waitForIngredients (int id)
         exit (EXIT_FAILURE);
     }
     //fechar
-        if(sh->fSt.closing==1)ret=false;
-    
-    
+    sh->fSt.st.smokerStat[id]=CLOSING_S;
+    saveState(nFic,&sh->fSt);
     /* TODO: insert your code here */
 
     if (semUp (semgid, sh->mutex) == -1) {                                                         /* exit critical region */
         perror ("error on the down operation for semaphore access (SM)");
         exit (EXIT_FAILURE);
     }
+     if(sh->fSt.closing==1){
+             ret=false;
+     }        
 
     return ret;
 }
-
 /**
  *  \brief smoker rolls cigarette
  *
@@ -208,18 +210,18 @@ static void rollingCigarette (int id)
     }
     sh->fSt.st.smokerStat[id]=ROLLING;
     //recolher os pacotes..
-      if (id==0){
+      if (id==HAVETOBACCO){
         //fumador 1
-        sh->fSt.ingredients[1]-=1;
-        sh->fSt.ingredients[2]-=1;
-    } else if(id == 1){
+        sh->fSt.ingredients[HAVEMATCHES]-=1;
+        sh->fSt.ingredients[HAVEPAPER]-=1;
+    } else if(id == HAVEMATCHES){
         //fumador 2
-        sh->fSt.ingredients[0]-=1;
-        sh->fSt.ingredients[2]-=1;
+        sh->fSt.ingredients[HAVETOBACCO]-=1;
+        sh->fSt.ingredients[HAVEPAPER]-=1;
     } else {
         //fumador 3
-        sh->fSt.ingredients[0]-=1;
-        sh->fSt.ingredients[1]-=1;
+        sh->fSt.ingredients[HAVETOBACCO]-=1;
+        sh->fSt.ingredients[HAVEMATCHES]-=1;
     }
     saveState(nFic,&sh->fSt);
     usleep(rollingTime);
@@ -230,7 +232,11 @@ static void rollingCigarette (int id)
         exit (EXIT_FAILURE);
     }
     //alertar o agente que ja acabou de enrolar
-    semUp(semgid,sh->waitCigarette);
+    if( semUp(semgid,sh->waitCigarette) ==-1){
+        perror ("error on the down operation for semaphore access (SM)");
+        exit (EXIT_FAILURE);
+    }
+
     /* TODO: insert your code here */
 
 }
@@ -251,7 +257,7 @@ static void smoke(int id)
         exit (EXIT_FAILURE);
     }
     sh->fSt.st.smokerStat[id]=SMOKING;
-    smokingTime=normalRand(20)+60; 
+    smokingTime=normalRand(30.0)+100; 
     usleep(smokingTime);
     saveState(nFic,&sh->fSt);
     
@@ -262,7 +268,7 @@ static void smoke(int id)
     }
 
     /* TODO: insert your code here */
-sh->fSt.nCigarettes[id]++;
+    sh->fSt.nCigarettes[id]++;
 }
 
 

@@ -138,8 +138,16 @@ static bool waitForIngredient(int id)
         perror ("error on the up operation for semaphore access (WT)");
         exit (EXIT_FAILURE);
     }
+    sh->fSt.st.watcherStat[id]=WAITING_ING;
+    saveState(nFic,&sh->fSt);
 
     /* TODO: insert your code here */
+    if  (semDown(semgid,sh->ingredient[id])==-1){
+        perror("error on the down operation for semaphore (WT)");
+        exit (EXIT_FAILURE);
+    }
+
+
 
     if (semUp (semgid, sh->mutex) == -1) {                                                         /* exit critical region */
         perror ("error on the down operation for semaphore access (WT)");
@@ -147,11 +155,19 @@ static bool waitForIngredient(int id)
     }
 
     /* TODO: insert your code here */
+     if(sh->fSt.closing){
+        sh->fSt.st.watcherStat[id]=CLOSING_W;
+        saveState(nFic,&sh->fSt);
+    }
 
-    if (semDown (semgid, sh->mutex) == -1)  {                                                     /* enter critical region */
+    if (semDown (semgid, sh->mutex) == -1 )  {                                                     /* enter critical region */
         perror ("error on the up operation for semaphore access (WT)");
         exit (EXIT_FAILURE);
     }
+    if  (semUp(semgid,sh->wait2Ings[id]==-1)){
+            perror("error on the up operation for semaphore access (WT)");
+        exit(EXIT_FAILURE);
+     }
 
     /* TODO: insert your code here */
 
@@ -177,13 +193,21 @@ static bool waitForIngredient(int id)
  */
 static int updateReservations (int id)
 {
-    int ret = -1;
+    int ret = -1; 
 
     if (semDown (semgid, sh->mutex) == -1)  {                                                     /* enter critical region */
         perror ("error on the up operation for semaphore access (WT)");
         exit (EXIT_FAILURE);
     }
+    sh->fSt.st.watcherStat [id]=UPDATING;
+    saveState(nFic,&sh->fSt);
+    //reserve the quantity of the agent ingredient in cause
+    sh->fSt.reserved[id]=sh->fSt.ingredients[id];
 
+    //Returns the id
+    if (sh->fSt.reserved[HAVETOBACCO]>0 && sh->fSt.reserved[HAVEPAPER]>0) ret=MATCHES;
+    if(sh->fSt.reserved[HAVETOBACCO]>0 && sh->fSt.reserved[HAVEMATCHES]>0) ret=PAPER;
+    if(sh->fSt.reserved[HAVEMATCHES]>0 && sh->fSt.reserved[HAVEPAPER]>0) ret =TOBACCO;
     /* TODO: insert your code here */
     
     if (semUp (semgid, sh->mutex) == -1) {                                                         /* exit critical region */

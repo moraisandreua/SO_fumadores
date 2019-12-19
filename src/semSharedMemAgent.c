@@ -147,19 +147,15 @@ static void prepareIngredients ()
       }
       
       semUp(semgid,sh->ingredient[firstIng]);
+      sh->fSt.ingredients[firstIng]++;
       semUp(semgid,sh->ingredient[secondIng]);
+      sh->fSt.ingredients[secondIng]++;
+
 
     if (semUp (semgid, sh->mutex) == -1) {                                                        /* leave critical region */
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
-    //atualizei o estado do agente
-    sh->fSt.st.agentStat=WAITING_CIG;
-    saveState(nFic,&sh->fSt);
-
-    /* Usar código no waitForCigarette
-        hm afinal não , falta atualizar o estado vou aprovveitar e fzr logo aqui
-     */
 }
 
 /**
@@ -175,12 +171,16 @@ static void waitForCigarette ()
         exit (EXIT_FAILURE);
     }
     // isto continua certo
-    semDown(semgid, sh->waitCigarette);
-
+    sh->fSt.st.agentStat=WAITING_CIG;
+    saveState(nFic,&sh->fSt);
     if (semUp (semgid, sh->mutex) == -1) {                                                        /* leave critical region */
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
+     if (semDown(semgid, sh->waitCigarette)==-1){
+        perror ("error on the up operation for semaphore access (AG)");
+        exit (EXIT_FAILURE);
+     }
 
     /* TODO: insert your code here */
 }
