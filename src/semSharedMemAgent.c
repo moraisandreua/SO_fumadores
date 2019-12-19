@@ -146,9 +146,15 @@ static void prepareIngredients ()
           first=false;
       }
       
-      semUp(semgid,sh->ingredient[firstIng]);
+      if(semUp(semgid,sh->ingredient[firstIng])==-1){
+        perror ("error on the up operation for semaphore access (AG)");
+        exit (EXIT_FAILURE);
+      }
       sh->fSt.ingredients[firstIng]++;
-      semUp(semgid,sh->ingredient[secondIng]);
+      if(semUp(semgid,sh->ingredient[secondIng])==-1){
+        perror ("error on the up operation for semaphore access (AG)");
+        exit (EXIT_FAILURE);
+      }
       sh->fSt.ingredients[secondIng]++;
 
 
@@ -181,7 +187,7 @@ static void waitForCigarette ()
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
      }
-
+    
     /* TODO: insert your code here */
 }
 
@@ -198,7 +204,7 @@ static void closeFactory ()
     }
 
     sh->fSt.st.agentStat=CLOSING_A;
-    //sh->fSt.closing=1;
+    sh->fSt.closing=1;
     saveState(nFic, &sh->fSt);
 
     if (semUp (semgid, sh->mutex) == -1) {                                                        /* leave critical region */
@@ -206,6 +212,19 @@ static void closeFactory ()
         exit (EXIT_FAILURE);
     }
 
+    //alterar o semaforo dos watchers
+    if(semUp(semgid, sh->fSt.ingredients[0])==-1){
+        perror ("error on the up operation for semaphore access (AG)");
+        exit (EXIT_FAILURE);
+    }
+    if(semUp(semgid, sh->fSt.ingredients[1])==-1){
+        perror ("error on the up operation for semaphore access (AG)");
+        exit (EXIT_FAILURE);
+    }
+    if(semUp(semgid, sh->fSt.ingredients[2])==-1){
+        perror ("error on the up operation for semaphore access (AG)");
+        exit (EXIT_FAILURE);
+    }
     /* TODO: insert your code here */
 }
 

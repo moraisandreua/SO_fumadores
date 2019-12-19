@@ -155,7 +155,7 @@ static bool waitForIngredients (int id)
         perror ("error on the up operation for semaphore access (SM)");
         exit (EXIT_FAILURE);
     }
-    //by me
+    
     sh->fSt.st.smokerStat[id]=WAITING_2ING;
     saveState(nFic,&sh->fSt);
     /* TODO: insert your code here */
@@ -257,7 +257,7 @@ static void smoke(int id)
         exit (EXIT_FAILURE);
     }
     sh->fSt.st.smokerStat[id]=SMOKING;
-    smokingTime=normalRand(30.0)+100; 
+    smokingTime=100+normalRand(30.0);
     usleep(smokingTime);
     saveState(nFic,&sh->fSt);
     
