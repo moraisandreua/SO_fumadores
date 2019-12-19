@@ -227,7 +227,8 @@ static void rollingCigarette (int id)
         sh->fSt.ingredients[HAVETOBACCO]-=1;
         sh->fSt.ingredients[HAVEMATCHES]-=1;
     }
-    usleep(rollingTime);
+    if(rollingTime>0)
+        usleep(rollingTime);
     /* TODO: insert your code here */
 
     if (semUp (semgid, sh->mutex) == -1) {                                                         /* exit critical region */
@@ -260,18 +261,18 @@ static void smoke(int id)
         exit (EXIT_FAILURE);
     }
     sh->fSt.st.smokerStat[id]=SMOKING;
-    smokingTime=100+normalRand(30.0);
-    usleep(smokingTime);
     saveState(nFic,&sh->fSt);
-    
+    smokingTime=100+normalRand(30.0);
+    sh->fSt.nCigarettes[id]++;
 
     if (semUp (semgid, sh->mutex) == -1) {                                                         /* exit critical region */
         perror ("error on the down operation for semaphore access (SM)");
         exit (EXIT_FAILURE);
     }
-
+    if (smokingTime>0)
+        usleep(smokingTime);
     /* TODO: insert your code here */
-    sh->fSt.nCigarettes[id]++;
+
 }
 
 

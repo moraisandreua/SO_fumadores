@@ -154,10 +154,7 @@ static bool waitForIngredient(int id)
     }
 
     /* TODO: insert your code here */
-     if(sh->fSt.closing){
-        sh->fSt.st.watcherStat[id]=CLOSING_W;
-        saveState(nFic,&sh->fSt);
-    }   
+      
     /*
     if  (semDown(semgid,sh->ingredient[id])==-1){
         perror("error on the down operation for semaphore (WT)");
@@ -168,17 +165,23 @@ static bool waitForIngredient(int id)
         perror ("error on the up operation for semaphore access (WT)");
         exit (EXIT_FAILURE);
     }
-  
+    if(sh->fSt.closing){
+        sh->fSt.st.watcherStat[id]=CLOSING_W;
+        saveState(nFic,&sh->fSt);
+        ret=false;
+    }
     /* TODO: insert your code here */
 
     if (semUp (semgid, sh->mutex) == -1) {                                                         /* exit critical region */
         perror ("error on the down operation for semaphore access (WT)");
         exit (EXIT_FAILURE);
     }
-    if  (semUp(semgid,sh->wait2Ings[id])==-1){
+    if(sh->fSt.closing){
+          if  (semUp(semgid,sh->wait2Ings[id])==-1){
             perror("error on the up operation for semaphore access (WT)");
         exit(EXIT_FAILURE);
      }
+    }
     return ret;
 }
 

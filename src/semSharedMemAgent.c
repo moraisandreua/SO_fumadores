@@ -145,16 +145,7 @@ static void prepareIngredients ()
           secondIng=rand()%3;
           first=false;
       }
-      
-      if(semUp(semgid,sh->ingredient[firstIng])==-1){
-        perror ("error on the up operation for semaphore access (AG)");
-        exit (EXIT_FAILURE);
-      }
       sh->fSt.ingredients[firstIng]++;
-      if(semUp(semgid,sh->ingredient[secondIng])==-1){
-        perror ("error on the up operation for semaphore access (AG)");
-        exit (EXIT_FAILURE);
-      }
       sh->fSt.ingredients[secondIng]++;
 
 
@@ -162,6 +153,16 @@ static void prepareIngredients ()
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
+         
+      if(semUp(semgid,sh->ingredient[firstIng])==-1){
+        perror ("error on the up operation for semaphore access (AG)");
+        exit (EXIT_FAILURE);
+      }  
+
+      if(semUp(semgid,sh->ingredient[secondIng])==-1){
+        perror ("error on the up operation for semaphore access (AG)");
+        exit (EXIT_FAILURE);
+      }
 }
 
 /**
@@ -203,9 +204,9 @@ static void closeFactory ()
     }
 
     sh->fSt.st.agentStat=CLOSING_A;
+     saveState(nFic, &sh->fSt);
     sh->fSt.closing=1;
-    saveState(nFic, &sh->fSt);
-
+   
     if (semUp (semgid, sh->mutex) == -1) {                                                        /* leave critical region */
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
