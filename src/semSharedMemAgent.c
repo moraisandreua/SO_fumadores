@@ -176,7 +176,6 @@ static void waitForCigarette ()
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
-    // isto continua certo
     sh->fSt.st.agentStat=WAITING_CIG;
     saveState(nFic,&sh->fSt);
     if (semUp (semgid, sh->mutex) == -1) {                                                        /* leave critical region */
@@ -213,15 +212,15 @@ static void closeFactory ()
     }
 
     //alterar o semaforo dos watchers
-    if(semUp(semgid, sh->fSt.ingredients[0])==-1){
+    if(semUp(semgid, sh->ingredient[0])==-1){
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
-    if(semUp(semgid, sh->fSt.ingredients[1])==-1){
+    if(semUp(semgid, sh->ingredient[1])==-1){
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
-    if(semUp(semgid, sh->fSt.ingredients[2])==-1){
+    if(semUp(semgid, sh->ingredient[2])==-1){
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }

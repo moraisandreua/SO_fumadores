@@ -158,30 +158,28 @@ static bool waitForIngredient(int id)
         sh->fSt.st.watcherStat[id]=CLOSING_W;
         saveState(nFic,&sh->fSt);
     }   
-    
+    /*
     if  (semDown(semgid,sh->ingredient[id])==-1){
         perror("error on the down operation for semaphore (WT)");
         exit (EXIT_FAILURE);
     }
-
+*/
     if (semDown (semgid, sh->mutex) == -1 )  {                                                     /* enter critical region */
         perror ("error on the up operation for semaphore access (WT)");
         exit (EXIT_FAILURE);
     }
   
-
     /* TODO: insert your code here */
 
     if (semUp (semgid, sh->mutex) == -1) {                                                         /* exit critical region */
         perror ("error on the down operation for semaphore access (WT)");
         exit (EXIT_FAILURE);
     }
-    if  (semUp(semgid,sh->wait2Ings[id]==-1)){
+    if  (semUp(semgid,sh->wait2Ings[id])==-1){
             perror("error on the up operation for semaphore access (WT)");
         exit(EXIT_FAILURE);
      }
     return ret;
-
 }
 
 /**
