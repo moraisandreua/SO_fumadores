@@ -213,15 +213,15 @@ static void closeFactory ()
     }
 
     //alterar o semaforo dos watchers
-    if(semUp(semgid, sh->ingredient[0])==-1){
+    if(semUp(semgid, sh->ingredient[TOBACCO])==-1){
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
-    if(semUp(semgid, sh->ingredient[1])==-1){
+    if(semUp(semgid, sh->ingredient[MATCHES])==-1){
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
-    if(semUp(semgid, sh->ingredient[2])==-1){
+    if(semUp(semgid, sh->ingredient[PAPER])==-1){
         perror ("error on the up operation for semaphore access (AG)");
         exit (EXIT_FAILURE);
     }
